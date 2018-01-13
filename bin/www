@@ -7,13 +7,19 @@
 var app = require('../app');
 var debug = require('debug')('node-api:server');
 var http = require('http');
-var mongoDBConnector = require('../server/mongoDBConnector');
+const mongoDBConnector = require('../server/mongoDBConnector');
+const logging = require('../util/logging');
 
 /**
  * Check if MongoDB is running
  */
-if(!mongoDBConnector.createConnection())
-  return false;
+
+mongoDBConnector.createConnection().then(result => {
+  if(!result){
+    logging.log("Stopping server...");
+    return false;
+  }
+})
 
 /**
  * Get port from environment and store in Express.
