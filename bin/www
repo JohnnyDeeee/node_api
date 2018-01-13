@@ -17,7 +17,7 @@ const logging = require('../util/logging');
 mongoDBConnector.createConnection().then(result => {
   if(!result){
     logging.log("Stopping server...");
-    return false;
+    process.exit(0); // Close the process
   }
 })
 
