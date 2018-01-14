@@ -4,7 +4,9 @@ block content
     h3 Users
     ul
         each user in users
-            li= user.username
+            li #{user.username} 
+                each group in user.group
+                    span [#{group.name}]
         else
             li No users found...
 
@@ -16,4 +18,9 @@ block content
         div
             label(for='password') Password: 
             input#password(type="password", name="password")
+        div
+            div Groups:
+            each group in groups
+                input(id=group.name, type="checkbox", name="groups[]" value=group.name)
+                | #{group.name}
         button(type="submit") Save

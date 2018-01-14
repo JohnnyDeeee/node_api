@@ -2,6 +2,7 @@ var express = require('express');
 var logging = require('../util/logging');
 var bcrypt = require('bcrypt');
 var router = express.Router();
+var User = require('../models/user');
 
 /* GET login */
 router.get('/', function(req, res, next) {
@@ -10,18 +11,18 @@ router.get('/', function(req, res, next) {
 
 /* POST login */
 router.post('/', function(req, res, next) {
-  var db = req.app.get('db');
   var username = req.body.username;
   var password = req.body.password;
 
   // TODO: Param validation
   // Check if users exists in DB
-  db.collection('users').find({username: username}, {limit: 1}).toArray((err, results) => {    
+  User.findOne({ username: username }, (err, result) => {
+    if(err)
+        return logging.error(err);
+    
     // Redirect to users if user exists, else redirect current page with error
-    if(results.length === 0)
+    if(!result)
         return res.redirect('/login');
-
-    var result = results[0];
 
     // TODO: Validate password
     var dbPass = result.password;

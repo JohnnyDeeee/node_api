@@ -1,33 +1,57 @@
 var express = require('express');
-var logging = require('../util/logging');
 var bcrypt = require('bcrypt');
 var router = express.Router();
-const saltRounds = 10;
+// Utils
+var logging = require('../util/logging');
+// Auth
+var hashing = require('../auth/hashing');
+// Models
+var User = require('../models/user');
+var Group = require('../models/group');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  var db = req.app.get('db');
-
   // Get users from DB and pass them to page
-  db.collection('users').find().toArray((err, results) => {
-    return res.render('users', { title: 'Users', users: results })
+  User.find().populate('group').exec((err, users) => { // Get all users
+    if(err) return logging.error(err);
+
+    Group.find({}, (err, groups) => { // Get all groups
+      if(err) return logging.error(err);
+
+      return res.render('users', { title: 'Users', users: users, groups: groups })
+    });    
   });
 });
 
 /* POST users */
 router.post('/', function(req, res, next) {
-  var db = req.app.get('db');
   const username = req.body.username;
   const password = req.body.password;
+  const groupNames = req.body.groups;
 
   // TODO: Param validation
   // Get info from form and add info to db
-  bcrypt.hash(password, saltRounds, (err, hash) => {
-    db.collection('users').insert({ username: username, password: hash });
-    
-    // Rerender users
-    return res.redirect('/users');
-  })
+  var groups = [];
+  groupNames.forEach(groupName => {
+    Group.findOne({name: groupName}, (err, group) => { // Get groups by their name
+      if(err) logging.error(err); // Error
+      if(!group) logging.error("Could not find group '"+groupName+"'"); // Error
+      groups.push(group); // Add group to array
+    })
+  });
+
+  hashing.hashPassword(password).then(hash => { // Create password hash
+    new User({ // Create new user
+      username: username,
+      password: hash,
+      group: groups
+    }).save(err => {
+      if(err) return logging.error(err); // Error
+
+      // Rerender users
+      return res.redirect('/users');
+    });
+  });
 });
 
 

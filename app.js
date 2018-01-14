@@ -4,12 +4,28 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var mongoose = require('mongoose');
+// Utils
+var logging = require('./util/logging');
+var inserts = require('./util/inserts');
+// Routes
 var index = require('./routes/index');
 var login = require('./routes/login');
 var users = require('./routes/users');
 
 var app = express();
+
+const dbName = "node_api";
+
+// Connect to DB
+mongoose.Promise = global.Promise; // Configure mongoose to use native Promise library
+mongoose.connect('mongodb://127.0.0.1/' + dbName, {
+  useMongoClient: true
+}).then(db => {
+  logging.log("Connected to MongoDB!");
+  logging.log("Inserting default documents into Database...");
+  inserts.createDefaultInserts();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,7 +35,7 @@ app.set('view engine', 'pug');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

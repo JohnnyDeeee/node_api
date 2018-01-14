@@ -7,24 +7,6 @@
 var app = require('../app');
 var debug = require('debug')('node-api:server');
 var http = require('http');
-const mongoDBConnector = require('../server/mongoDBConnector');
-const logging = require('../util/logging');
-
-/**
- * Check if MongoDB is running
- */
-
-var db;
-mongoDBConnector.createConnection().then(result => {
-  if(!result){
-    logging.log("Stopping server...");
-    process.exit(0); // Close the process
-  }else{
-    db = result;
-    app.set('db', db); // Save to 'global' space
-    logging.log("Saved DB to global space");
-  }
-})
 
 /**
  * Get port from environment and store in Express.
