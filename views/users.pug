@@ -1,0 +1,16 @@
+extends layout
+
+block content
+    h3 Users
+    ul
+        each user in users
+            li= user.name
+        else
+            li No users found...
+
+    h3 Add User
+    form(action="/users", method="post")
+        div
+            label(for='name') Name: 
+            input#name(type="text", name="name")
+        button(type="submit") Save

@@ -28,7 +28,7 @@ const PREFIX = "["+PROJECT_NAME+"]";
 /* Private functions */
 // Makes sure we add the PREFIX and Reset upon each log
 function wrapper(color, message){
-    console.log(color + PREFIX + " " + message + Reset);
+    console.log(color + PREFIX, message, Reset);
 }
 
 /* Public functions */

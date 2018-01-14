@@ -5,10 +5,10 @@ const DB_NAME = "node_api";
 /* Private Functions */
 // Tries to create a connection with the local MongoDB server
 function createMongoDBConnection(resolve, reject){
-    MongoClient.connect('mongodb://127.0.0.1:27017/'+DB_NAME, (err, database) => {
+    MongoClient.connect('mongodb://127.0.0.1:27017', (err, client) => {
         if(!err){
             logging.log("Successfully created connection to MongoDB!");
-            resolve(true);
+            resolve(client.db(DB_NAME));
         }else{
             logging.error("Error while creating connection to MongoDB!");
             logging.error(err);
