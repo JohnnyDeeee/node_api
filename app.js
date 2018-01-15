@@ -40,7 +40,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use((req, res, next) => {
+app.use((req, res, next) => { // CORS middleware
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+app.use((req, res, next) => { // JWT Verify middleware
   if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT'){
     jsonwebtoken.verify(req.headers.authorization.split(' ')[1], config.SECRET_KEY, (err, decode) => {
       req.user = decode;
@@ -50,7 +55,7 @@ app.use((req, res, next) => {
     req.user = undefined;
     next();
   }
-})
+});
 
 // Routes
 app.use('/', index);
