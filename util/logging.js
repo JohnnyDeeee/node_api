@@ -1,3 +1,5 @@
+var config = require('../config/config');
+
 const Reset = "\x1b[0m";
 const Bright = "\x1b[1m";
 const Dim = "\x1b[2m";
@@ -22,8 +24,7 @@ const BgMagenta = "\x1b[45m";
 const BgCyan = "\x1b[46m";
 const BgWhite = "\x1b[47m";
 
-const PROJECT_NAME = require('../package.json').name;
-const PREFIX = "["+PROJECT_NAME+"]";
+const PREFIX = "["+config.APP_NAME+"]";
 
 /* Private functions */
 // Makes sure we add the PREFIX and Reset upon each log

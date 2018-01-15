@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 var logging = require('../util/logging');
+var config = require('../config/config');
 
 // Returns all users
 exports.listAllUsers = (req, res) => {
@@ -25,7 +26,7 @@ exports.register = (req, res) => {
     req.body.groups.split(',').forEach(group => {
         newUser.group.push(group.trim()); // Add group to user (use trim to remove whitespaces)
     });
-    newUser.password = newUser.createPasswordHash(req.body.password);
+    newUser.password = newUser.createPasswordHash(req.body.password); // Create hash of given password
     newUser.save((err, user) => {
         if (err) {
             logging.error(err);
@@ -43,14 +44,14 @@ exports.login = (req, res) => {
         if (err) return logging.error(err);
         if (!user) return res.status(401).json({ message: "Authentication failed, User not found!" });
         else if (user) {
-            if (!user.checkPassword(req.body.password))
+            if (!user.checkPassword(req.body.password)) // Check if password matches user's hash
                 return res.status(401).json({ message: "Authentication failed, wrong password!" });
             else
                 return res.json({
-                    token: jwt.sign({
+                    token: jwt.sign({ // Create te JWT token
                         username: user.username,
                         _id: user._id
-                    }, 'SECRET_KEY')
+                    }, config.SECRET_KEY)
                 })
         }
     });

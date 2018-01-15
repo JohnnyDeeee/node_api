@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var jsonwebtoken = require('jsonwebtoken');
+var config = require('./config/config');
 // Utils
 var logging = require('./util/logging');
 // Routes
@@ -16,11 +17,9 @@ var groups = require('./routes/groups');
 
 var app = express();
 
-const dbName = "node_api";
-
 // Connect to DB
 mongoose.Promise = global.Promise; // Configure mongoose to use native Promise library
-mongoose.connect('mongodb://127.0.0.1/' + dbName, {
+mongoose.connect('mongodb://127.0.0.1/' + config.DB_NAME, {
   useMongoClient: true
 }).then(db => {
   logging.log("Connected to MongoDB!");
@@ -43,7 +42,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT'){
-    jsonwebtoken.verify(req.headers.authorization.split(' ')[1], 'SECRET_KEY', (err, decode) => {
+    jsonwebtoken.verify(req.headers.authorization.split(' ')[1], config.SECRET_KEY, (err, decode) => {
       req.user = decode;
       next();
     });
