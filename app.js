@@ -5,13 +5,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var jsonwebtoken = require('jsonwebtoken');
 // Utils
 var logging = require('./util/logging');
-var inserts = require('./util/inserts');
 // Routes
 var index = require('./routes/index');
 var login = require('./routes/login');
 var users = require('./routes/users');
+var groups = require('./routes/groups');
 
 var app = express();
 
@@ -23,8 +24,10 @@ mongoose.connect('mongodb://127.0.0.1/' + dbName, {
   useMongoClient: true
 }).then(db => {
   logging.log("Connected to MongoDB!");
-  logging.log("Inserting default documents into Database...");
-  inserts.createDefaultInserts();
+}).catch(err => {
+  logging.error("Could not connect to MongoDB!");
+  logging.log("Server is terminating...");
+  process.exit(0);
 });
 
 // view engine setup
@@ -38,10 +41,23 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use((req, res, next) => {
+  if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT'){
+    jsonwebtoken.verify(req.headers.authorization.split(' ')[1], 'SECRET_KEY', (err, decode) => {
+      req.user = decode;
+      next();
+    });
+  } else {
+    req.user = undefined;
+    next();
+  }
+})
 
+// Routes
 app.use('/', index);
 app.use('/login', login);
 app.use('/users', users);
+app.use('/groups', groups);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

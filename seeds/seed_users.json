@@ -1,0 +1,23 @@
+[
+    {
+        "_id": "5a5ca3ba435188149814bf3b",
+        "password": "$2a$10$49L/bXFiJ1s9S7Z7RCnRLOv74zea6Pkqocokv2YM9bdbhl9HlgR46",
+        "username": "Sjonnie",
+        "__v": 0,
+        "group": []
+    },
+    {
+        "_id": "5a5ca82393d27316ecc14817",
+        "password": "$2a$10$MAJjoRBxopeZzM0zyaKydOGnL055XUqn88MHr83brem8TP2adO7Y6",
+        "username": "JohnDoe",
+        "__v": 0,
+        "group": []
+    },
+    {
+        "_id": "5a5ca82893d27316ecc14818",
+        "password": "$2a$10$dZ3E90xwzUS2VJNU1Z.Yd.nU852ydIoqZbhMqHm9iOarpVCfLQYb2",
+        "username": "JaneDoe",
+        "__v": 0,
+        "group": []
+    }
+]
