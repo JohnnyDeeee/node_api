@@ -4,10 +4,15 @@ var router = express.Router();
 var userController = require('../controllers/user');
 
 /* GET users listing. */
-router.get('/', userController.loginRequired, userController.listAllUsers);
+router.get('/', userController.loginRequired, userController.listAll);
 
 /* POST users */
-router.post('/', userController.loginRequired, userController.register);
+router.post('/', userController.loginRequired, userController.create);
 
+/* PUT update an user */
+router.put('/:userID', userController.loginRequired, userController.update);
+
+/* DELETE an user */
+router.delete('/:userID', userController.loginRequired, userController.delete);
 
 module.exports = router;

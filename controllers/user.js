@@ -5,28 +5,23 @@ var logging = require('../util/logging');
 var config = require('../config/config');
 
 // Returns all users
-exports.listAllUsers = (req, res) => {
+exports.listAll = (req, res) => {
     User.find({}, (err, users) => {
         if (err) {
             logging.error(err);
             return res.status(400).json({ message: err });
         }else{
+            users.forEach((elem) => { elem.password = undefined; }); // Dont return password
             res.json(users);
         }
     })
 }
 
 // Creates a new User with a password hash
-exports.register = (req, res) => {
+exports.create = (req, res) => {
     // TODO: Param validation
 
-    var newUser = new User({
-        username: req.body.username,
-    });
-    req.body.groups.split(',').forEach(group => {
-        newUser.group.push(group.trim()); // Add group to user (use trim to remove whitespaces)
-    });
-    newUser.password = newUser.createPasswordHash(req.body.password); // Create hash of given password
+    var newUser = createNewUser(req.body.username, req.body.password);
     newUser.save((err, user) => {
         if (err) {
             logging.error(err);
@@ -34,6 +29,33 @@ exports.register = (req, res) => {
         }else{
             user.password = undefined; // Dont return password to user
             return res.json(user);
+        }
+    });
+}
+
+// Updates user info
+exports.update = (req, res) => {
+    // TODO: Param validation
+    var newUser = createNew(req.body.username, req.body.password);
+    User.findByIdAndUpdate(req.params.userID, newUser, {new: true}, (err, user) => {
+        if (err) {
+            logging.error(err);
+            return res.status(400).json({ message: err });
+        }else{
+            user.password = undefined; // Dont return password to user
+            return res.json(user);
+        }
+    });
+}
+
+// Delete an user
+exports.delete = (req, res) => {
+    User.findByIdAndRemove(req.params.userID, (err, user) => {
+        if (err){
+            logging.error(err);
+            return res.status(400).json({ message: err });
+        }else{
+            return res.json({ message: "User succesfully deleted!" });
         }
     });
 }
@@ -64,4 +86,14 @@ exports.loginRequired = (req, res, next) => {
     } else {
         return res.status(401).json({ message: "Unauthorized!" });
     }
+}
+
+/* Private functions */
+function createNewUser(username, password) {
+    var newUser = new User({
+        username: username,
+    });
+    newUser.password = newUser.createPasswordHash(password); // Create hash of given password
+
+    return newUser;
 }

@@ -2,13 +2,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
-var groupSchema = new Schema({
+var movieSchema = new Schema({
     id: ObjectId,
     name: {
         type: String,
         required: true,
-        unique: true
-    }
+    },
+    actors: [{
+        type: ObjectId,
+        ref: 'Actor'
+    }]
 });
 
-module.exports = mongoose.model('Group', groupSchema);
+module.exports = mongoose.model('Movie', movieSchema);

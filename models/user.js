@@ -16,11 +16,7 @@ var userSchema = new Schema({
     password: {
         type: String,
         required: true
-    },
-    group: [{
-        type: ObjectId,
-        ref: 'Group'
-    }]
+    }
 });
 
 // Creates a password hash from the given stringf
